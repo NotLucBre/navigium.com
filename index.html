@@ -97,23 +97,34 @@ main{max-width:1160px;margin:0 auto;padding:22px 28px 45px;min-height:500px}
 .training-name{font-size:18px;color:#163861;font-weight:700;margin:5px 0}
 .training-link{color:#163861;text-decoration:underline;font-weight:700}
 .all-training{display:inline-block;margin-top:10px;color:#163861;text-decoration:underline}
-.mascot{position:absolute;right:10px;bottom:-190px;width:150px;height:314px;pointer-events:none}
+.mascot{position:absolute;right:18px;bottom:0;width:150px;height:314px;pointer-events:none;z-index:2}
 .mascot img{display:block;width:150px;height:314px;object-fit:contain}
 
 /* Translation */
-.translate{margin-top:230px;background:#fff;border:1px solid var(--line);border-radius:7px;padding:20px}
-.translate h2{margin:0 0 10px;color:var(--blue);font-size:20px}
-.translate textarea{width:100%;min-height:100px;border:1px solid #c5c8ce;border-radius:4px;padding:10px;resize:vertical}
+.translate-toggle{
+  display:inline-flex;align-items:center;gap:9px;background:var(--blue);color:#fff;
+  border:0;border-radius:4px;padding:10px 15px;font-weight:700;cursor:pointer
+}
+.translate-toggle:hover{background:#303a7b}
+.translate-panel{display:none;margin-top:12px;background:#fff;border:1px solid var(--line);border-radius:7px;padding:20px}
+.translate-panel.open{display:block}
+.translate-panel h2{margin:0 0 10px;color:var(--blue);font-size:20px}
+.translate-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.translate-box label{display:block;font-weight:700;color:var(--blue);margin-bottom:6px}
+.translate textarea{
+  width:100%;min-height:115px;border:1px solid #c5c8ce;border-radius:4px;padding:10px;resize:vertical
+}
 .translate-actions{display:flex;gap:8px;margin-top:10px;flex-wrap:wrap}
 .action{
   background:var(--blue);color:#fff;border:0;border-radius:4px;padding:9px 14px;
   font-weight:700;cursor:pointer
 }
 .action:hover{background:#303a7b}
+.translation-result{background:#f7f8fb;min-height:115px;border:1px solid #c5c8ce;border-radius:4px;padding:10px;white-space:pre-wrap}
 
 /* Footer */
-footer{background:var(--navy);color:#fff;min-height:420px;padding:70px 42px 45px}
-.footer-inner{max-width:1160px;margin:auto;display:grid;grid-template-columns:1.35fr 1fr .85fr 1fr;gap:42px}
+footer{position:relative;background:var(--navy);color:#fff;min-height:420px;padding:70px 42px 45px}
+.footer-inner{max-width:1160px;margin:auto;display:grid;grid-template-columns:1.35fr 1fr .85fr 1fr;gap:42px;padding-right:145px}
 .footer-logo{font-size:32px;letter-spacing:-1px;margin-bottom:42px}
 .footer-contact{font-size:17px;line-height:1.6;font-weight:700}
 .footer-col{display:flex;flex-direction:column;gap:13px;font-size:17px}
@@ -128,8 +139,8 @@ footer{background:var(--navy);color:#fff;min-height:420px;padding:70px 42px 45px
   .brand{min-width:0}.brand-name{font-size:24px}.brand-mark{font-size:38px;width:35px}
   .nav{order:3;width:100%;justify-content:center;gap:18px;overflow:auto;padding:4px 0;font-size:14px}
   .ad-free{display:none}
-  .footer-inner{grid-template-columns:1fr 1fr}
-  .mascot{display:none}.translate{margin-top:35px}
+  .footer-inner{grid-template-columns:1fr 1fr;padding-right:0}
+  .mascot{display:none}.translate{margin-top:35px}.translate-grid{grid-template-columns:1fr}
 }
 @media(max-width:560px){
   main{padding:20px 16px 35px}.page-title{font-size:23px}
@@ -197,23 +208,35 @@ footer{background:var(--navy);color:#fff;min-height:420px;padding:70px 42px 45px
       <div class="training-name">Textarbeit mit Navigium</div>
       <a class="training-link" href="#">Details &amp; Anmeldung</a>
     </div>
-    <div class="mascot" aria-hidden="true">
-      <img src="https://www.navigium.de/latein-woerterbuch/wp-cache/wp-content/uploads/2026/03/roemer.png" alt="">
-    </div>
   </div>
   <a class="all-training" href="#">Alle kommenden Schulungen</a>
 
   <section class="translate">
-    <h2>Latein → Deutsch</h2>
-    <textarea id="translateText" placeholder="Lateinischen Text hier eingeben ..."></textarea>
-    <div class="translate-actions">
-      <button class="action" onclick="translateText()">Mit Google Translate übersetzen</button>
-      <button class="action" onclick="copyText()">Text kopieren</button>
+    <button class="translate-toggle" onclick="toggleTranslation()" id="translateToggle">＋ Latein → Deutsch</button>
+    <div class="translate-panel" id="translatePanel">
+      <h2>Latein → Deutsch</h2>
+      <div class="translate-grid">
+        <div class="translate-box">
+          <label for="translateText">Lateinischer Text</label>
+          <textarea id="translateText" placeholder="Lateinischen Text hier eingeben ..."></textarea>
+        </div>
+        <div class="translate-box">
+          <label>Deutsche Übersetzung</label>
+          <div class="translation-result" id="translationResult">Die Übersetzung erscheint hier.</div>
+        </div>
+      </div>
+      <div class="translate-actions">
+        <button class="action" onclick="translateText()">Übersetzen</button>
+        <button class="action" onclick="copyTranslation()">Übersetzung kopieren</button>
+      </div>
     </div>
   </section>
 </main>
 
 <footer>
+  <div class="mascot" aria-hidden="true">
+    <img src="https://www.navigium.de/latein-woerterbuch/wp-cache/wp-content/uploads/2026/03/roemer.png" alt="">
+  </div>
   <div class="footer-inner">
     <div>
       <div class="footer-logo">N NAVIGIUM</div>
@@ -249,11 +272,11 @@ footer{background:var(--navy);color:#fff;min-height:420px;padding:70px 42px 45px
 
 <script>
 const data=[
- {w:"navigium",title:"nāvigium -ī, n",meta:"(o-Deklination neutr.)",form:"navigium",forms:"Nom. Sg., Akk. Sg.",meaning:"Schiff, Fahrzeug"},
- {w:"via",title:"via, viae, f.",meta:"(a-Deklination)",form:"via",forms:"Nom. Sg.",meaning:"Weg, Straße; Reise, Wegstrecke"},
- {w:"puella",title:"puella, puellae, f.",meta:"(a-Deklination)",form:"puella",forms:"Nom. Sg.",meaning:"Mädchen"},
- {w:"amicus",title:"amicus, amīcī, m.",meta:"(o-Deklination)",form:"amicus",forms:"Nom. Sg.",meaning:"Freund; befreundet, freundlich"},
- {w:"rosa",title:"rosa, rosae, f.",meta:"(a-Deklination)",form:"rosa",forms:"Nom. Sg.",meaning:"Rose"}
+ {w:"navigium",title:"nāvigium -ī, n",meta:"(o-Deklination neutr.)",form:"navigium",forms:"Nom. Sg., Akk. Sg.",meaning:"Schiff, Fahrzeug",de:"schiff fahrzeug"},
+ {w:"via",title:"via, viae, f.",meta:"(a-Deklination)",form:"via",forms:"Nom. Sg.",meaning:"Weg, Straße; Reise, Wegstrecke",de:"weg straße reise"},
+ {w:"puella",title:"puella, puellae, f.",meta:"(a-Deklination)",form:"puella",forms:"Nom. Sg.",meaning:"Mädchen",de:"mädchen"},
+ {w:"amicus",title:"amicus, amīcī, m.",meta:"(o-Deklination)",form:"amicus",forms:"Nom. Sg.",meaning:"Freund; befreundet, freundlich",de:"freund freundlich"},
+ {w:"rosa",title:"rosa, rosae, f.",meta:"(a-Deklination)",form:"rosa",forms:"Nom. Sg.",meaning:"Rose",de:"rose"}
 ];
 
 function clearSearch(){
@@ -267,7 +290,9 @@ function search(){
  if(!q){clearSearch();return}
  document.getElementById("headingWord").textContent=q;
  document.querySelector(".result-heading").textContent="Ergebnis der Suche nach lat. Formen";
- const hit=data.find(x=>x.w===q)||data.find(x=>x.w.includes(q));
+ const hit=data.find(x=>x.w===q)||
+   data.find(x=>x.w.includes(q))||
+   data.find(x=>x.de.split(" ").some(word=>word===q||word.includes(q)));
  const entry=document.querySelector(".entry");
  if(!hit){
    entry.innerHTML='<div style="color:#555">Keine Demo-Ergebnisse gefunden.</div>';
@@ -280,13 +305,36 @@ function search(){
 }
 document.getElementById("q").addEventListener("keydown",e=>{if(e.key==="Enter")search()});
 
-function translateText(){
- const t=document.getElementById("translateText").value.trim();
- if(!t)return;
- window.open("https://translate.google.com/?sl=la&tl=de&text="+encodeURIComponent(t)+"&op=translate","_blank");
+function toggleTranslation(){
+ const panel=document.getElementById("translatePanel");
+ const button=document.getElementById("translateToggle");
+ panel.classList.toggle("open");
+ button.textContent=panel.classList.contains("open")?"− Latein → Deutsch":"＋ Latein → Deutsch";
 }
-async function copyText(){
- const t=document.getElementById("translateText").value;
+function translateText(){
+ const input=document.getElementById("translateText").value.trim().toLowerCase();
+ const result=document.getElementById("translationResult");
+ if(!input){
+   result.textContent="Bitte zuerst einen lateinischen Text eingeben.";
+   return;
+ }
+ const words=input.replace(/[.,!?;:]/g,"").split(/\s+/);
+ const dictionary={
+   navigium:"Schiff",navigium:"Schiff",
+   via:"Weg",viae:"Wege",
+   puella:"Mädchen",puellae:"Mädchen",
+   amicus:"Freund",amici:"Freunde",amicum:"Freund",
+   rosa:"Rose",rosam:"Rose",rosae:"Rose",
+   et:"und",in:"in",est:"ist",sunt:"sind",
+   aqua:"Wasser",aquam:"Wasser",aqua:"Wasser",
+   servus:"Sklave",servum:"Sklaven",servi:"Sklaven",
+   dominus:"Herr",dominum:"Herrn",domini:"Herren"
+ };
+ const translated=words.map(w=>dictionary[w]||"["+w+"]");
+ result.textContent=translated.join(" ");
+}
+async function copyTranslation(){
+ const t=document.getElementById("translationResult").textContent;
  if(t && navigator.clipboard) await navigator.clipboard.writeText(t);
 }
 </script>
