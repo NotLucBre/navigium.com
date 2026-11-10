@@ -289,7 +289,8 @@ const data=[
  {w:"via",title:"via, viae, f.",meta:"(a-Deklination)",form:"via",forms:"Nom. Sg.",meaning:"Weg, Straße; Reise, Wegstrecke",de:"weg straße reise"},
  {w:"puella",title:"puella, puellae, f.",meta:"(a-Deklination)",form:"puella",forms:"Nom. Sg.",meaning:"Mädchen",de:"mädchen"},
  {w:"amicus",title:"amicus, amīcī, m.",meta:"(o-Deklination)",form:"amicus",forms:"Nom. Sg.",meaning:"Freund; befreundet, freundlich",de:"freund freundlich"},
- {w:"rosa",title:"rosa, rosae, f.",meta:"(a-Deklination)",form:"rosa",forms:"Nom. Sg.",meaning:"Rose",de:"rose"}
+ {w:"rosa",title:"rosa, rosae, f.",meta:"(a-Deklination)",form:"rosa",forms:"Nom. Sg.",meaning:"Rose",de:"rose"},
+ {w:"servus",title:"servus -ī, m.",meta:"(o-Deklination)",form:"servus",forms:"Nom. Sg.",meaning:"Sklave, Diener",de:"sklave diener"}
 ];
 
 function toggleMenu(){
@@ -385,52 +386,43 @@ async function translateText(){
    result.textContent="Bitte zuerst einen lateinischen Text eingeben.";
    return;
  }
- result.textContent="Übersetze …";
 
- // MyMemory provides a public browser-accessible translation endpoint.
- // Unknown/untranslated words are shown in square brackets instead of being silently changed.
- try{
-   const url="https://api.mymemory.translated.net/get?q="+encodeURIComponent(input)+"&langpair=la|de";
-   const response=await fetch(url);
-   const json=await response.json();
-   let translated=json?.responseData?.translatedText||"";
-   if(!translated || translated.toLowerCase()===input.toLowerCase()){
-     translated=await translateWordByWord(input);
-   }
-   result.textContent=markUnknownWords(input,translated);
- }catch(error){
-   result.textContent=await translateWordByWord(input);
- }
-}
+ const dictionary={
+   servus:"Sklave",servum:"Sklaven",servī:"Sklaven",servi:"Sklaven",serve:"Sklave",servō:"Sklaven",
+   navigium:"Schiff",navigiī:"Schiff",navigium:"Schiff",
+   via:"Weg",viae:"Wege",viam:"Weg",viā:"Weg",
+   puella:"Mädchen",puellae:"Mädchen",puellam:"Mädchen",
+   amicus:"Freund",amīcus:"Freund",amicī:"Freunde",amicum:"Freund",
+   rosa:"Rose",rosae:"Rose",rosam:"Rose",
+   et:"und",in:"in",est:"ist",sunt:"sind",
+   aqua:"Wasser",aquam:"Wasser",aquae:"Wasser",
+   dominus:"Herr",dominum:"Herrn",dominī:"Herren",domini:"Herren",
+   labor:"Arbeit",labōrāre:"arbeiten",laborare:"arbeiten",
+   pueri:"Jungen",puer:"Junge",puerum:"Jungen",
+   femina:"Frau",fēmina:"Frau",feminam:"Frau",
+   vir:"Mann",virum:"Mann",viri:"Männer"
+ };
 
-async function translateWordByWord(input){
- const tokens=input.split(/(\s+|[,.!?;:]+)/);
- const out=[];
+ const tokens=input.split(/(\\s+|[,.!?;:]+)/);
+ const unknown=[];
+ const translated=[];
  for(const token of tokens){
-   if(!token.trim() || /^[,.!?;:]+$/.test(token)){out.push(token);continue}
-   try{
-     const url="https://api.mymemory.translated.net/get?q="+encodeURIComponent(token)+"&langpair=la|de";
-     const r=await fetch(url);
-     const j=await r.json();
-     const t=j?.responseData?.translatedText?.trim();
-     out.push(t && t.toLowerCase()!==token.toLowerCase()?t:"["+token+"]");
-   }catch(e){
-     out.push("["+token+"]");
+   if(!token.trim() || /^[,.!?;:]+$/.test(token)){translated.push(token);continue}
+   const clean=token.toLowerCase();
+   if(dictionary[clean]){
+     translated.push(dictionary[clean]);
+   }else{
+     unknown.push(token);
+     translated.push("["+token+"]");
    }
  }
- return out.join("");
-}
-
-function markUnknownWords(original,translated){
- // Preserve an explicit bracket convention for obvious untranslated Latin tokens.
- const originalWords=original.toLowerCase().match(/[a-zāēīōūȳăĕĭŏŭ]+/gi)||[];
- let out=translated;
- for(const word of originalWords){
-   if(out.toLowerCase().includes(word.toLowerCase()) && !out.includes("["+word+"]")){
-     out=out.replace(new RegExp("\\b"+word+"\\b","i"),"["+word+"]");
-   }
+ result.textContent=translated.join("");
+ if(unknown.length===0){
+   result.textContent+="\\n\\n✓ Alle Wörter aus dem lokalen Wörterbuch erkannt.";
+ }else{
+   result.textContent+="\\n\\nNicht erkannt: "+unknown.join(", ");
+   result.textContent+="\\nDiese Wörter bleiben in eckigen Klammern.";
  }
- return out;
 }
 
 async function copyTranslation(){
