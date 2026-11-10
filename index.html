@@ -3,76 +3,305 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Latein-Wörterbuch</title>
+<title>Navigium – Latein-Wörterbuch</title>
 <style>
-:root{--green:#78b82a;--dark:#4e8518;--bg:#f4f6f1;--border:#d7ddd0;--text:#333}
-*{box-sizing:border-box}body{margin:0;background:var(--bg);font-family:Arial,Helvetica,sans-serif;color:var(--text)}
-header{background:linear-gradient(#82c332,#6faa20);color:#fff;border-bottom:4px solid #568b16}
-.header{max-width:1050px;margin:auto;padding:18px 22px;display:flex;align-items:center;gap:18px}
-.logo{font-size:30px;font-weight:700}.sub{font-size:14px;opacity:.9}
-main{max-width:1050px;margin:28px auto;padding:0 18px}
-.card{background:white;border:1px solid var(--border);border-radius:6px;box-shadow:0 2px 8px #0000000d;margin-bottom:22px}
-.search{padding:20px}.searchrow{display:flex;gap:8px}.searchrow input{flex:1;padding:12px;border:1px solid #bbb;border-radius:4px;font-size:16px}.btn{border:0;border-radius:4px;padding:11px 18px;background:var(--green);color:#fff;font-weight:700;cursor:pointer}.btn:hover{background:var(--dark)}
-.options{margin-top:14px;display:flex;gap:20px;flex-wrap:wrap;font-size:14px}
-.results{padding:22px}.result{padding:15px 0;border-bottom:1px solid #e4e8df}.result:last-child{border-bottom:0}.latin{font-size:21px;font-weight:700;color:#4f7e1c}.meta{font-size:13px;color:#777}.meaning{margin-top:7px;line-height:1.55}.meaning b{color:#222}
-h2{margin:0 0 15px;color:#527e20;font-size:21px}
-.translate textarea{width:100%;min-height:130px;resize:vertical;padding:12px;border:1px solid #bbb;border-radius:4px;font:16px Arial}
-.translate .actions{display:flex;gap:8px;margin-top:10px;flex-wrap:wrap}
-footer{text-align:center;color:#777;font-size:12px;padding:30px}
-.hidden{display:none}
-@media(max-width:650px){.searchrow{flex-direction:column}.header{align-items:flex-start;flex-direction:column}.logo{font-size:25px}}
+:root{
+  --blue:#3d478f;
+  --navy:#193b68;
+  --orange:#f59a23;
+  --text:#243b63;
+  --muted:#6c7482;
+  --line:#d9dce4;
+  --page:#f5f5f5;
+  --green:#20a73b;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--page);color:var(--text);font-family:Arial,Helvetica,sans-serif}
+button,input,textarea{font:inherit}
+
+/* Header */
+.topbar{
+  height:92px;background:#fff;border-bottom:1px solid #d8dbe2;
+  display:flex;align-items:center;padding:0 28px;gap:34px
+}
+.menu{
+  width:38px;height:34px;border:0;background:transparent;cursor:pointer;
+  display:flex;flex-direction:column;justify-content:center;gap:6px;padding:2px
+}
+.menu span{display:block;width:30px;height:4px;border-radius:4px;background:#173b68}
+.brand{display:flex;align-items:center;gap:9px;min-width:340px}
+.brand-mark{
+  width:43px;height:54px;position:relative;color:#173b68;
+  font-family:Georgia,serif;font-weight:700;font-size:45px;line-height:54px
+}
+.brand-mark:after{content:"";position:absolute;left:20px;top:3px;width:3px;height:48px;background:#173b68}
+.brand-name{font-size:29px;letter-spacing:-1px;color:#173b68}
+.nav{margin-left:auto;display:flex;align-items:center;gap:34px;font-weight:700;font-size:17px}
+.nav a{color:#183963;text-decoration:none;white-space:nowrap}
+.nav a:hover{color:var(--orange)}
+.nav .active{color:var(--orange)}
+.nav .caret{font-size:13px;margin-left:4px}
+
+/* Search bar area */
+.search-area{background:var(--blue);min-height:126px;padding:31px 20px 25px}
+.search-inner{max-width:600px;margin:0 auto}
+.search-row{display:flex;height:37px}
+.search-row input{
+  flex:1;min-width:0;border:0;padding:7px 13px;font-size:18px;
+  border-radius:4px 0 0 4px;outline:none
+}
+.clear{
+  width:38px;border:0;background:#fff;color:#999;font-size:24px;cursor:pointer
+}
+.search-btn{
+  width:97px;border:0;border-left:1px solid #ddd;border-radius:0 4px 4px 0;
+  background:#8a8c92;color:#fff;font-weight:700;cursor:pointer
+}
+.search-btn:hover{background:#74767c}
+.options{display:flex;align-items:center;gap:9px;margin-top:7px;color:#fff;font-size:17px}
+.options label{display:flex;align-items:center;gap:5px}
+.options input{accent-color:#2196f3}
+.ad-free{margin-left:10px;font-size:14px;font-weight:700;color:#fff}
+
+/* Main */
+main{max-width:1160px;margin:0 auto;padding:22px 28px 45px;min-height:500px}
+.page-title{font-size:28px;font-weight:500;margin:0 0 10px;color:var(--blue)}
+.related{
+  display:inline-block;border:0;border-radius:4px;background:var(--blue);color:#fff;
+  padding:9px 14px;font-weight:700;cursor:pointer
+}
+.related:hover{background:#303a7b}
+.result-heading{font-size:21px;margin:26px 0 12px;color:var(--blue)}
+.entry{font-size:17px;line-height:1.5;max-width:950px}
+.entry-head{font-weight:700;color:#183963}
+.entry-meta{font-style:italic;color:#2e4568}
+.grammar{display:inline-block;background:var(--green);color:#fff;padding:0 3px;font-weight:700}
+.meaning{margin-left:40px}
+.speaker{font-size:17px;margin-left:4px}
+
+/* Training strip */
+.training-title{font-size:15px;letter-spacing:.3px;font-weight:700;color:#68717f;margin-top:26px}
+.training{
+  position:relative;margin-top:8px;background:#fff;border:1px solid #dfe2e8;
+  border-radius:9px;min-height:102px;display:flex;align-items:center;
+  padding:15px 24px;box-shadow:0 1px 3px #0000000d
+}
+.training-icon{
+  width:65px;height:65px;border-radius:50%;margin-right:20px;flex:none;
+  background:linear-gradient(145deg,#ece9c9,#c5c29e);
+  border:3px solid #aaa98f;display:flex;align-items:center;justify-content:center;
+  font-size:34px
+}
+.training-date{font-size:15px;color:#667085;font-weight:700}
+.training-name{font-size:18px;color:#163861;font-weight:700;margin:5px 0}
+.training-link{color:#163861;text-decoration:underline;font-weight:700}
+.all-training{display:inline-block;margin-top:10px;color:#163861;text-decoration:underline}
+.mascot{
+  position:absolute;right:8px;bottom:-190px;width:135px;height:215px;
+  pointer-events:none;opacity:.95
+}
+.mascot .helmet{position:absolute;left:37px;top:12px;width:58px;height:62px;border-radius:50% 50% 42% 42%;background:#d8d9db;border:3px solid #8a8d92}
+.mascot .crest{position:absolute;left:63px;top:0;width:8px;height:35px;background:#777;transform:rotate(12deg)}
+.mascot .face{position:absolute;left:48px;top:39px;width:38px;height:42px;border-radius:45%;background:#e5aa78;border:2px solid #9a6848}
+.mascot .body{position:absolute;left:36px;top:79px;width:65px;height:76px;background:#f0f0e5;border:3px solid #8c8e88;border-radius:10px}
+.mascot .skirt{position:absolute;left:29px;top:137px;width:80px;height:36px;background:#c94732;border:3px solid #8e3327;clip-path:polygon(10% 0,90% 0,100% 100%,0 100%)}
+.mascot .spear{position:absolute;right:18px;top:8px;width:5px;height:190px;background:#777}
+.mascot .spear:before{content:"";position:absolute;top:-8px;left:-10px;border-left:12px solid transparent;border-right:12px solid transparent;border-bottom:28px solid #9da0a3}
+.mascot .leg{position:absolute;top:169px;width:13px;height:43px;background:#d69b6d;border:2px solid #875d40;border-radius:8px}
+.mascot .leg.l{left:44px}.mascot .leg.r{left:82px}
+
+/* Translation */
+.translate{margin-top:230px;background:#fff;border:1px solid var(--line);border-radius:7px;padding:20px}
+.translate h2{margin:0 0 10px;color:var(--blue);font-size:20px}
+.translate textarea{width:100%;min-height:100px;border:1px solid #c5c8ce;border-radius:4px;padding:10px;resize:vertical}
+.translate-actions{display:flex;gap:8px;margin-top:10px;flex-wrap:wrap}
+.action{
+  background:var(--blue);color:#fff;border:0;border-radius:4px;padding:9px 14px;
+  font-weight:700;cursor:pointer
+}
+.action:hover{background:#303a7b}
+
+/* Footer */
+footer{background:var(--navy);color:#fff;min-height:420px;padding:70px 42px 45px}
+.footer-inner{max-width:1160px;margin:auto;display:grid;grid-template-columns:1.35fr 1fr .85fr 1fr;gap:42px}
+.footer-logo{font-size:32px;letter-spacing:-1px;margin-bottom:42px}
+.footer-contact{font-size:17px;line-height:1.6;font-weight:700}
+.footer-col{display:flex;flex-direction:column;gap:13px;font-size:17px}
+.footer-col a{color:#fff;text-decoration:none}
+.footer-col a:hover{text-decoration:underline}
+.footer-col .orange{color:var(--orange)}
+.footer-note{max-width:1160px;margin:50px auto 0;color:#dbe4ef;font-size:12px}
+
+/* Mobile */
+@media(max-width:900px){
+  .topbar{height:auto;min-height:80px;padding:14px 18px;gap:15px;flex-wrap:wrap}
+  .brand{min-width:0}.brand-name{font-size:24px}.brand-mark{font-size:38px;width:35px}
+  .nav{order:3;width:100%;justify-content:center;gap:18px;overflow:auto;padding:4px 0;font-size:14px}
+  .ad-free{display:none}
+  .footer-inner{grid-template-columns:1fr 1fr}
+  .mascot{display:none}.translate{margin-top:35px}
+}
+@media(max-width:560px){
+  main{padding:20px 16px 35px}.page-title{font-size:23px}
+  .search-area{padding-left:12px;padding-right:12px}
+  .options{font-size:14px;flex-wrap:wrap}
+  .training{padding:12px}.training-icon{margin-right:12px}
+  .footer-inner{grid-template-columns:1fr}
+  footer{padding:45px 25px}.footer-logo{margin-bottom:25px}
+  .meaning{margin-left:20px}
+}
 </style>
 </head>
 <body>
-<header><div class="header"><div class="logo">Navigium</div><div class="sub">Latein-Wörterbuch · Spaßprojekt</div></div></header>
+
+<header class="topbar">
+  <button class="menu" aria-label="Menü" onclick="alert('Menü – Spaßprojekt')">
+    <span></span><span></span><span></span>
+  </button>
+  <div class="brand">
+    <div class="brand-mark">N</div>
+    <div class="brand-name">NAVIGIUM</div>
+  </div>
+  <nav class="nav">
+    <a href="#">Lehrkräfte <span class="caret">▼</span></a>
+    <a href="#">Schüler:innen</a>
+    <a href="#">Preise</a>
+    <a href="#">Kontakt</a>
+    <a href="#" class="active">Wörterbuch</a>
+    <a href="#">Login</a>
+  </nav>
+</header>
+
+<section class="search-area">
+  <div class="search-inner">
+    <div class="search-row">
+      <input id="q" value="navigium" placeholder="lateinische Form oder deutsche Grundform" autocomplete="off">
+      <button class="clear" onclick="clearSearch()" aria-label="Löschen">×</button>
+      <button class="search-btn" onclick="search()">Suchen</button>
+    </div>
+    <div class="options">
+      <label><input type="radio" name="dict" value="large"> Großwörterbuch</label>
+      <label><input type="radio" name="dict" value="school" checked> Schulwörterbuch</label>
+      <span class="ad-free">Werbefrei nutzen (5,99 EUR/Jahr)</span>
+    </div>
+  </div>
+</section>
+
 <main>
-<section class="card search">
-  <div class="searchrow"><input id="q" placeholder="lateinische Form oder deutsche Grundform" autocomplete="off"><button class="btn" onclick="search()">Suchen</button></div>
-  <div class="options">
-    <label><input type="radio" name="dict" value="large"> Großwörterbuch</label>
-    <label><input type="radio" name="dict" value="school" checked> Schulwörterbuch</label>
+  <h1 class="page-title"><span id="headingWord">navigium</span> – Übersetzung und Redewendungen Latein/Deutsch</h1>
+  <button class="related" onclick="alert('Sprachverwandte würden hier angezeigt.')">Sprachverwandte anzeigen</button>
+
+  <h2 class="result-heading">Ergebnis der Suche nach lat. Formen</h2>
+
+  <div class="entry">
+    <div class="entry-head">nāvigium -ī, n <span class="entry-meta">(o-Deklination neutr.)</span> ⚙</div>
+    <div><span class="grammar">navigium</span>: Nom. Sg., Akk. Sg.</div>
+    <div class="meaning">Schiff, Fahrzeug</div>
   </div>
-</section>
-<section class="card results">
-  <h2 id="title">Beispielergebnisse</h2>
-  <div id="results">
-    <div class="result"><div class="latin">via, viae, f.</div><div class="meta">a-Deklination</div><div class="meaning"><b>1.</b> Weg, Straße<br><b>2.</b> Reise, Wegstrecke</div></div>
-    <div class="result"><div class="latin">puella, puellae, f.</div><div class="meta">a-Deklination</div><div class="meaning"><b>1.</b> Mädchen</div></div>
-    <div class="result"><div class="latin">amicus, amīcī, m.</div><div class="meta">o-Deklination</div><div class="meaning"><b>1.</b> Freund<br><b>2.</b> befreundet, freundlich</div></div>
+
+  <div class="training-title">ONLINE-SCHULUNG FÜR LEHRKRÄFTE</div>
+  <div class="training">
+    <div class="training-icon">📚</div>
+    <div>
+      <div class="training-date">Mi., 03.03.2027, 17h · 60 min</div>
+      <div class="training-name">Textarbeit mit Navigium</div>
+      <a class="training-link" href="#">Details &amp; Anmeldung</a>
+    </div>
+    <div class="mascot" aria-hidden="true">
+      <div class="helmet"></div><div class="crest"></div><div class="face"></div>
+      <div class="body"></div><div class="skirt"></div><div class="spear"></div>
+      <div class="leg l"></div><div class="leg r"></div>
+    </div>
   </div>
-</section>
-<section class="card translate search">
-  <h2>Latein → Deutsch</h2>
-  <textarea id="text" placeholder="Lateinischen Text hier eingeben ..."></textarea>
-  <div class="actions"><button class="btn" onclick="translate()">Mit Google Translate übersetzen</button><button class="btn" onclick="copyText()">Text kopieren</button></div>
-</section>
+  <a class="all-training" href="#">Alle kommenden Schulungen</a>
+
+  <section class="translate">
+    <h2>Latein → Deutsch</h2>
+    <textarea id="translateText" placeholder="Lateinischen Text hier eingeben ..."></textarea>
+    <div class="translate-actions">
+      <button class="action" onclick="translateText()">Mit Google Translate übersetzen</button>
+      <button class="action" onclick="copyText()">Text kopieren</button>
+    </div>
+  </section>
 </main>
-<footer>Eigenständiges Spaßprojekt. Nicht mit Navigium verbunden oder von Navigium betrieben.</footer>
+
+<footer>
+  <div class="footer-inner">
+    <div>
+      <div class="footer-logo">N NAVIGIUM</div>
+      <div class="footer-contact">Tel: +49 241 513880<br>support@navigium.online</div>
+    </div>
+    <div class="footer-col">
+      <a href="#">Navigium für Englisch</a>
+      <a href="#">Navigium für Französisch</a>
+      <a href="#">Navigium für Latein</a>
+      <a href="#">Navigium für Spanisch</a>
+      <a href="#">Navigium für Italienisch</a>
+      <a href="#">Navigium für Altgriechisch</a>
+    </div>
+    <div class="footer-col">
+      <a href="#" class="orange">Latein Wörterbuch</a>
+      <a href="#">Schulungen</a>
+      <a href="#">Support für Lehrkräfte</a>
+      <a href="#">Schüler:innen</a>
+      <a href="#">Latein-Apps</a>
+      <a href="#">Newsletter</a>
+    </div>
+    <div class="footer-col">
+      <a href="#">Kontakt</a>
+      <a href="#">Impressum</a>
+      <a href="#">Datenschutz</a>
+      <a href="#">Widerruf</a>
+      <a href="#">Verträge kündigen</a>
+      <a href="#">Home</a>
+    </div>
+  </div>
+  <div class="footer-note">Eigenständiges Spaßprojekt. Nicht mit Navigium verbunden oder von Navigium betrieben.</div>
+</footer>
+
 <script>
 const data=[
- {w:"via",html:"<b>via</b>, viae, f.<br><span class='meta'>a-Deklination</span><br><b>1.</b> Weg, Straße<br><b>2.</b> Reise, Wegstrecke"},
- {w:"puella",html:"<b>puella</b>, puellae, f.<br><span class='meta'>a-Deklination</span><br><b>1.</b> Mädchen"},
- {w:"amicus",html:"<b>amicus</b>, amīcī, m.<br><span class='meta'>o-Deklination</span><br><b>1.</b> Freund<br><b>2.</b> befreundet, freundlich"},
- {w:"rosa",html:"<b>rosa</b>, rosae, f.<br><span class='meta'>a-Deklination</span><br><b>1.</b> Rose"},
- {w:"navigium",html:"<b>navigium</b>, navigiī, n.<br><span class='meta'>o-Deklination</span><br><b>1.</b> Schiff"}
+ {w:"navigium",title:"nāvigium -ī, n",meta:"(o-Deklination neutr.)",form:"navigium",forms:"Nom. Sg., Akk. Sg.",meaning:"Schiff, Fahrzeug"},
+ {w:"via",title:"via, viae, f.",meta:"(a-Deklination)",form:"via",forms:"Nom. Sg.",meaning:"Weg, Straße; Reise, Wegstrecke"},
+ {w:"puella",title:"puella, puellae, f.",meta:"(a-Deklination)",form:"puella",forms:"Nom. Sg.",meaning:"Mädchen"},
+ {w:"amicus",title:"amicus, amīcī, m.",meta:"(o-Deklination)",form:"amicus",forms:"Nom. Sg.",meaning:"Freund; befreundet, freundlich"},
+ {w:"rosa",title:"rosa, rosae, f.",meta:"(a-Deklination)",form:"rosa",forms:"Nom. Sg.",meaning:"Rose"}
 ];
+
+function clearSearch(){
+ document.getElementById("q").value="";
+ document.getElementById("headingWord").textContent="Latein";
+ document.querySelector(".result-heading").textContent="Bitte Suchbegriff eingeben";
+ document.querySelector(".entry").innerHTML="";
+}
 function search(){
  const q=document.getElementById("q").value.trim().toLowerCase();
- const box=document.getElementById("results");
- document.getElementById("title").textContent=q?("Suchergebnis für „"+q+"“"):"Beispielergebnisse";
- if(!q){location.hash="";location.reload();return}
- const hits=data.filter(x=>x.w.includes(q));
- box.innerHTML=hits.length?hits.map(x=>"<div class='result'><div class='latin'>"+x.html+"</div></div>").join(""):"<div class='result'>Keine lokalen Demo-Ergebnisse gefunden.<br><br>Für echte Wörterbuchdaten müsste ein eigenes Datenbackend eingebunden werden.</div>";
+ if(!q){clearSearch();return}
+ document.getElementById("headingWord").textContent=q;
+ document.querySelector(".result-heading").textContent="Ergebnis der Suche nach lat. Formen";
+ const hit=data.find(x=>x.w===q)||data.find(x=>x.w.includes(q));
+ const entry=document.querySelector(".entry");
+ if(!hit){
+   entry.innerHTML='<div style="color:#555">Keine Demo-Ergebnisse gefunden.</div>';
+   return;
+ }
+ entry.innerHTML=
+  '<div class="entry-head">'+hit.title+' <span class="entry-meta">'+hit.meta+'</span> ⚙</div>'+
+  '<div><span class="grammar">'+hit.form+'</span>: '+hit.forms+'</div>'+
+  '<div class="meaning">'+hit.meaning+'</div>';
 }
 document.getElementById("q").addEventListener("keydown",e=>{if(e.key==="Enter")search()});
-function translate(){
- const t=document.getElementById("text").value.trim();
+
+function translateText(){
+ const t=document.getElementById("translateText").value.trim();
  if(!t)return;
- location.href="https://translate.google.com/?sl=la&tl=de&text="+encodeURIComponent(t)+"&op=translate";
+ window.open("https://translate.google.com/?sl=la&tl=de&text="+encodeURIComponent(t)+"&op=translate","_blank");
 }
 async function copyText(){
- const t=document.getElementById("text").value;
- if(t) await navigator.clipboard.writeText(t);
+ const t=document.getElementById("translateText").value;
+ if(t && navigator.clipboard) await navigator.clipboard.writeText(t);
 }
 </script>
-</body></html>
+</body>
+</html>
