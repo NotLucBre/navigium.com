@@ -137,7 +137,7 @@ main{max-width:1160px;margin:0 auto;padding:22px 28px 45px;min-height:500px}
 .lara-title{font-weight:700;color:var(--blue);margin-bottom:5px}
 .lara-note{font-size:13px;color:#667085;line-height:1.5;margin-bottom:12px}
 .lara-settings label{display:block;font-size:13px;font-weight:700;color:var(--blue);margin:8px 0 5px}
-.lara-settings input{width:100%;border:1px solid #c5c8ce;border-radius:4px;padding:9px}
+.lara-settings input,.lara-settings select{width:100%;border:1px solid #c5c8ce;border-radius:4px;padding:9px;background:#fff}
 .lara-status{font-size:13px;color:#667085;margin-top:8px;min-height:18px}
 .translator-note{margin-top:14px;border-top:1px solid #d9dce4;padding-top:14px;font-size:13px;color:#667085;line-height:1.5}
 
@@ -255,25 +255,46 @@ footer{position:relative;background:var(--navy);color:#fff;min-height:420px;padd
       <div class="translate-actions">
         <button class="action" onclick="translateText()">Übersetzen</button>
         <button class="action" onclick="copyTranslation()">Übersetzung kopieren</button>
-        <button class="action secondary-action" onclick="toggleLaraSettings()" id="laraSettingsToggle">Lara API-Key</button>
+        <button class="action secondary-action" onclick="toggleTranslatorSettings()" id="translatorSettingsToggle">Übersetzer-Einstellungen</button>
       </div>
 
-      <div class="lara-settings" id="laraSettings" style="display:none">
-        <div class="lara-title">Lara API</div>
+      <div class="lara-settings" id="translatorSettings" style="display:none">
+        <div class="lara-title">Übersetzer</div>
         <div class="lara-note">
-          Optional: Wenn du eigene Lara-Zugangsdaten einträgst, wird zuerst Lara verwendet.
-          Wenn kein Key vorhanden ist oder Lara einen Fehler zurückgibt, wird automatisch MyMemory als kostenlose Fallback-API verwendet.
-          Deine Zugangsdaten werden nur lokal in diesem Browser gespeichert und nicht in GitHub.
+          Wähle Lara oder OpenAI. Der gewählte Dienst wird zuerst verwendet. Wenn der gewählte Dienst fehlschlägt,
+          wird automatisch MyMemory als kostenlose Fallback-API verwendet. Zugangsdaten werden nur lokal in diesem Browser gespeichert.
         </div>
-        <label for="laraKeyId">Access Key ID</label>
-        <input id="laraKeyId" type="text" autocomplete="off" placeholder="Lara Access Key ID">
-        <label for="laraKeySecret">Access Key Secret</label>
-        <input id="laraKeySecret" type="password" autocomplete="off" placeholder="Lara Access Key Secret">
-        <div class="translate-actions">
-          <button class="action" onclick="saveLaraCredentials()">Speichern</button>
-          <button class="action secondary-action" onclick="removeLaraCredentials()">Löschen</button>
+
+        <label for="translatorProvider">Übersetzer</label>
+        <select id="translatorProvider" onchange="saveTranslatorProvider()">
+          <option value="lara">Lara</option>
+          <option value="openai">OpenAI</option>
+        </select>
+
+        <div id="laraCredentialsFields">
+          <label for="laraKeyId">Lara Access Key ID</label>
+          <input id="laraKeyId" type="text" autocomplete="off" placeholder="Lara Access Key ID">
+          <label for="laraKeySecret">Lara Access Key Secret</label>
+          <input id="laraKeySecret" type="password" autocomplete="off" placeholder="Lara Access Key Secret">
+          <div class="translate-actions">
+            <button class="action" onclick="saveLaraCredentials()">Lara speichern</button>
+            <button class="action secondary-action" onclick="removeLaraCredentials()">Lara löschen</button>
+          </div>
         </div>
-        <div class="lara-status" id="laraStatus"></div>
+
+        <div id="openaiFields" style="display:none">
+          <label for="openaiApiKey">OpenAI API-Key</label>
+          <input id="openaiApiKey" type="password" autocomplete="off" placeholder="sk-...">
+          <div class="translate-actions">
+            <button class="action" onclick="saveOpenAIKey()">OpenAI speichern</button>
+            <button class="action secondary-action" onclick="removeOpenAIKey()">OpenAI löschen</button>
+          </div>
+          <div class="lara-note">
+            Modell: <b>gpt-6-luna</b> – für kurze Übersetzungsaufgaben auf niedrige Tokenkosten ausgelegt.
+          </div>
+        </div>
+
+        <div class="lara-status" id="translatorStatus"></div>
       </div>
 
       <div class="translator-note">
@@ -409,17 +430,43 @@ function getLaraCredentials(){
  return {id,secret};
 }
 
-function loadLaraCredentials(){
+function getOpenAIKey(){
+ return localStorage.getItem("navigiumOpenAIApiKey")||"";
+}
+
+function getTranslatorProvider(){
+ return localStorage.getItem("navigiumTranslatorProvider")||"lara";
+}
+
+function updateTranslatorFields(){
+ const provider=document.getElementById("translatorProvider").value;
+ document.getElementById("laraCredentialsFields").style.display=provider==="lara"?"block":"none";
+ document.getElementById("openaiFields").style.display=provider==="openai"?"block":"none";
+}
+
+function loadTranslatorSettings(){
+ const provider=getTranslatorProvider();
+ document.getElementById("translatorProvider").value=provider;
  const credentials=getLaraCredentials();
  document.getElementById("laraKeyId").value=credentials.id;
  document.getElementById("laraKeySecret").value=credentials.secret;
+ document.getElementById("openaiApiKey").value=getOpenAIKey();
+ updateTranslatorFields();
 }
 
-function toggleLaraSettings(){
- const box=document.getElementById("laraSettings");
+function toggleTranslatorSettings(){
+ const box=document.getElementById("translatorSettings");
  const open=box.style.display==="none";
  box.style.display=open?"block":"none";
- if(open) loadLaraCredentials();
+ if(open) loadTranslatorSettings();
+}
+
+function saveTranslatorProvider(){
+ const provider=document.getElementById("translatorProvider").value;
+ localStorage.setItem("navigiumTranslatorProvider",provider);
+ updateTranslatorFields();
+ document.getElementById("translatorStatus").textContent=
+   provider==="openai" ? "OpenAI ist als Übersetzer ausgewählt." : "Lara ist als Übersetzer ausgewählt.";
 }
 
 function saveLaraCredentials(){
@@ -427,13 +474,13 @@ function saveLaraCredentials(){
  const secret=document.getElementById("laraKeySecret").value.trim();
 
  if(!id || !secret){
-   alert("Bitte Access Key ID und Access Key Secret eingeben.");
+   alert("Bitte Lara Access Key ID und Access Key Secret eingeben.");
    return;
  }
 
  localStorage.setItem("navigiumLaraAccessKeyId",id);
  localStorage.setItem("navigiumLaraAccessKeySecret",secret);
- document.getElementById("laraStatus").textContent="Lara-Zugangsdaten wurden lokal gespeichert.";
+ document.getElementById("translatorStatus").textContent="Lara-Zugangsdaten wurden lokal gespeichert.";
 }
 
 function removeLaraCredentials(){
@@ -441,7 +488,26 @@ function removeLaraCredentials(){
  localStorage.removeItem("navigiumLaraAccessKeySecret");
  document.getElementById("laraKeyId").value="";
  document.getElementById("laraKeySecret").value="";
- document.getElementById("laraStatus").textContent="Lara-Zugangsdaten wurden aus diesem Browser gelöscht.";
+ document.getElementById("translatorStatus").textContent="Lara-Zugangsdaten wurden gelöscht.";
+}
+
+function saveOpenAIKey(){
+ const key=document.getElementById("openaiApiKey").value.trim();
+ if(!key){
+   alert("Bitte einen OpenAI API-Key eingeben.");
+   return;
+ }
+ localStorage.setItem("navigiumOpenAIApiKey",key);
+ localStorage.setItem("navigiumTranslatorProvider","openai");
+ document.getElementById("translatorProvider").value="openai";
+ updateTranslatorFields();
+ document.getElementById("translatorStatus").textContent="OpenAI API-Key wurde lokal gespeichert.";
+}
+
+function removeOpenAIKey(){
+ localStorage.removeItem("navigiumOpenAIApiKey");
+ document.getElementById("openaiApiKey").value="";
+ document.getElementById("translatorStatus").textContent="OpenAI API-Key wurde gelöscht.";
 }
 
 function toggleTranslation(){
@@ -455,7 +521,6 @@ async function translateWithLara(input){
  const credentials=getLaraCredentials();
  if(!credentials.id || !credentials.secret) throw new Error("NO_LARA_CREDENTIALS");
 
- // Lara publishes an official browser build of its JavaScript SDK.
  const {Credentials,Translator}=await import("https://cdn.jsdelivr.net/npm/@translated/lara@1.18.2/+esm");
  const lara=new Translator(new Credentials(credentials.id,credentials.secret));
 
@@ -475,6 +540,48 @@ async function translateWithLara(input){
    translated.push(result.translation);
  }
  return translated.join("\n");
+}
+
+async function translateWithOpenAI(input){
+ const apiKey=getOpenAIKey();
+ if(!apiKey) throw new Error("NO_OPENAI_KEY");
+
+ const systemPrompt=
+   "Übersetze den folgenden Satz/Text von Latein zu Deutsch. " +
+   "Erfinde dabei keine Wörter, Informationen oder Inhalte, die im lateinischen Ausgangstext nicht vorkommen sollen. " +
+   "Übersetze so genau wie möglich. Bewahre Sinn, Satzstruktur und Zeilenumbrüche so weit wie möglich. " +
+   "Gib ausschließlich die deutsche Übersetzung aus, ohne Erklärungen, Kommentare oder Einleitungen.";
+
+ const response=await fetch("https://api.openai.com/v1/responses",{
+   method:"POST",
+   headers:{
+     "Content-Type":"application/json",
+     "Authorization":"Bearer "+apiKey
+   },
+   body:JSON.stringify({
+     model:"gpt-6-luna",
+     reasoning:{effort:"none"},
+     instructions:systemPrompt,
+     input:input,
+     max_output_tokens:Math.max(256,Math.min(4096,Math.ceil(input.length*2.5))),
+     store:false
+   })
+ });
+
+ if(!response.ok){
+   const errorText=await response.text().catch(()=> "");
+   throw new Error("OPENAI_HTTP_"+response.status+" "+errorText);
+ }
+
+ const json=await response.json();
+ const text=json?.output_text ||
+   json?.output?.flatMap(item=>item.content||[])
+     ?.filter(part=>part.type==="output_text")
+     ?.map(part=>part.text)
+     ?.join("");
+
+ if(!text) throw new Error("OPENAI_NO_TRANSLATION");
+ return text.trim();
 }
 
 async function translateWithMyMemory(input){
@@ -514,7 +621,7 @@ async function translateWithMyMemory(input){
 async function translateText(){
  const input=document.getElementById("translateText").value.trim();
  const result=document.getElementById("translationResult");
- const status=document.getElementById("laraStatus");
+ const status=document.getElementById("translatorStatus");
 
  if(!input){
    result.textContent="Bitte zuerst einen lateinischen Text eingeben.";
@@ -524,31 +631,41 @@ async function translateText(){
  result.textContent="Übersetzung läuft …";
  status.textContent="";
 
- const credentials=getLaraCredentials();
+ const provider=getTranslatorProvider();
 
- // Preferred path: Lara, but only if the user supplied credentials.
- if(credentials.id && credentials.secret){
-   try{
-     const translated=await translateWithLara(input);
-     result.textContent=translated+"\n\n✓ Übersetzt mit Lara.";
-     status.textContent="Lara wurde verwendet.";
-     return;
-   }catch(error){
-     status.textContent="Lara konnte nicht verwendet werden. Fallback auf MyMemory …";
+ if(provider==="openai"){
+   if(getOpenAIKey()){
+     try{
+       const translated=await translateWithOpenAI(input);
+       result.textContent=translated+"\n\n✓ Übersetzt mit OpenAI.";
+       status.textContent="OpenAI wurde verwendet.";
+       return;
+     }catch(error){
+       status.textContent="OpenAI konnte nicht verwendet werden. Fallback auf MyMemory …";
+     }
+   }else{
+     status.textContent="Kein OpenAI API-Key vorhanden. Fallback auf MyMemory …";
    }
  }else{
-   status.textContent="Kein Lara-Key vorhanden. Fallback auf MyMemory …";
+   const credentials=getLaraCredentials();
+   if(credentials.id && credentials.secret){
+     try{
+       const translated=await translateWithLara(input);
+       result.textContent=translated+"\n\n✓ Übersetzt mit Lara.";
+       status.textContent="Lara wurde verwendet.";
+       return;
+     }catch(error){
+       status.textContent="Lara konnte nicht verwendet werden. Fallback auf MyMemory …";
+     }
+   }else{
+     status.textContent="Keine Lara-Zugangsdaten vorhanden. Fallback auf MyMemory …";
+   }
  }
 
- // Fallback path: free anonymous MyMemory API.
  try{
    const translated=await translateWithMyMemory(input);
    result.textContent=translated+"\n\n✓ Übersetzt mit MyMemory.";
-   if(!credentials.id || !credentials.secret){
-     status.textContent="MyMemory wurde verwendet.";
-   }else{
-     status.textContent="Lara war nicht verfügbar. MyMemory wurde verwendet.";
-   }
+   status.textContent="MyMemory wurde als Fallback verwendet.";
  }catch(error){
    result.textContent="Die Übersetzungsdienste sind gerade nicht verfügbar. Bitte versuche es später erneut.";
  }
