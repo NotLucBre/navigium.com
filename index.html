@@ -247,7 +247,14 @@ footer{position:relative;background:var(--navy);color:#fff;min-height:420px;padd
         <div id="apiKeyBox" style="display:none;margin-top:10px">
           <label for="apiKeyInput" style="display:block;font-weight:700;color:var(--blue);margin-bottom:6px">LibreTranslate API-Key</label>
           <input id="apiKeyInput" type="password" autocomplete="off" placeholder="API-Key eingeben" style="width:100%;max-width:500px;border:1px solid #c5c8ce;border-radius:4px;padding:10px">
-          <div style="margin-top:7px;font-size:13px;color:#667085">Der Key wird nur lokal in diesem Browser gespeichert und nicht auf GitHub veröffentlicht.</div>
+          <div style="margin-top:7px;font-size:13px;color:#667085;line-height:1.5">
+  <b>So einfach geht's:</b><br>
+  1. Öffne <a href="https://libretranslate.com/" target="_blank" rel="noopener" style="color:var(--blue);font-weight:700">LibreTranslate</a>.<br>
+  2. Besorge dir dort einen API-Key.<br>
+  3. Kopiere den Key hier hinein und klicke auf „Key speichern“.<br>
+  4. Fertig. Danach kannst du unbekannte Texte übersetzen.<br><br>
+  Der Key wird nur lokal in diesem Browser gespeichert und nicht auf GitHub veröffentlicht.
+</div>
           <button class="action" type="button" onclick="saveApiKey()" style="margin-top:8px">Key speichern</button>
           <button class="action" type="button" onclick="removeApiKey()" style="margin-top:8px">Key löschen</button>
         </div>
