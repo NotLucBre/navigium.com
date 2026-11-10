@@ -387,9 +387,12 @@ async function translateText(){
    return;
  }
 
+ result.textContent="Übersetzung läuft …";
+
+ // First use the local Latin dictionary for words we know exactly.
  const dictionary={
    servus:"Sklave",servum:"Sklaven",servī:"Sklaven",servi:"Sklaven",serve:"Sklave",servō:"Sklaven",
-   navigium:"Schiff",navigiī:"Schiff",navigium:"Schiff",
+   navigium:"Schiff",navigiī:"Schiff",
    via:"Weg",viae:"Wege",viam:"Weg",viā:"Weg",
    puella:"Mädchen",puellae:"Mädchen",puellam:"Mädchen",
    amicus:"Freund",amīcus:"Freund",amicī:"Freunde",amicum:"Freund",
@@ -403,7 +406,7 @@ async function translateText(){
    vir:"Mann",virum:"Mann",viri:"Männer"
  };
 
- const tokens=input.split(/(\\s+|[,.!?;:]+)/);
+ const tokens=input.split(/(\s+|[,.!?;:]+)/);
  const unknown=[];
  const translated=[];
  for(const token of tokens){
@@ -416,12 +419,40 @@ async function translateText(){
      translated.push("["+token+"]");
    }
  }
+
+ // For unknown words, use LibreTranslate as the public/open fallback.
+ // No API key is embedded here. The endpoint can be changed to a self-hosted
+ // LibreTranslate instance later without changing the UI.
+ if(unknown.length){
+   try{
+     const response=await fetch("https://libretranslate.com/translate",{
+       method:"POST",
+       headers:{"Content-Type":"application/json"},
+       body:JSON.stringify({
+         q:input,
+         source:"la",
+         target:"de",
+         format:"text"
+       })
+     });
+     if(response.ok){
+       const json=await response.json();
+       if(json.translatedText){
+         result.textContent=json.translatedText+"\n\n✓ Übersetzt mit LibreTranslate.";
+         return;
+       }
+     }
+   }catch(error){
+     // Keep the local result if the public API is unavailable.
+   }
+ }
+
  result.textContent=translated.join("");
  if(unknown.length===0){
-   result.textContent+="\\n\\n✓ Alle Wörter aus dem lokalen Wörterbuch erkannt.";
+   result.textContent+="\n\n✓ Alle Wörter aus dem lokalen Wörterbuch erkannt.";
  }else{
-   result.textContent+="\\n\\nNicht erkannt: "+unknown.join(", ");
-   result.textContent+="\\nDiese Wörter bleiben in eckigen Klammern.";
+   result.textContent+="\n\nNicht erkannt: "+unknown.join(", ");
+   result.textContent+="\nDie öffentliche Übersetzungs-API war nicht verfügbar.";
  }
 }
 
