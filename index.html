@@ -42,6 +42,10 @@ button,input,textarea{font:inherit}
 .nav a:hover{color:var(--orange)}
 .nav .active{color:var(--orange)}
 .nav .caret{font-size:13px;margin-left:4px}
+.quick-menu{display:none;position:absolute;top:92px;left:18px;z-index:20;background:#fff;border:1px solid #d8dbe2;border-radius:0 0 7px 7px;box-shadow:0 5px 18px #0002;min-width:250px}
+.quick-menu.open{display:flex;flex-direction:column}
+.quick-menu a{padding:12px 17px;color:#183963;text-decoration:none;font-weight:700}
+.quick-menu a:hover{background:#f1f3f8;color:var(--orange)}
 
 /* Search bar area */
 .search-area{background:var(--blue);min-height:126px;padding:31px 20px 25px}
@@ -74,6 +78,8 @@ main{max-width:1160px;margin:0 auto;padding:22px 28px 45px;min-height:500px}
 .related:hover{background:#303a7b}
 .result-heading{font-size:21px;margin:26px 0 12px;color:var(--blue)}
 .entry{font-size:17px;line-height:1.5;max-width:950px}
+.api-status{font-size:13px;color:#667085;margin-top:9px}
+.api-link{color:var(--blue);text-decoration:underline}
 .entry-head{font-weight:700;color:#183963}
 .entry-meta{font-style:italic;color:#2e4568}
 .grammar{display:inline-block;background:var(--green);color:#fff;padding:0 3px;font-weight:700}
@@ -156,7 +162,7 @@ footer{position:relative;background:var(--navy);color:#fff;min-height:420px;padd
 <body>
 
 <header class="topbar">
-  <button class="menu" aria-label="Menü" onclick="alert('Menü – Spaßprojekt')">
+  <button class="menu" aria-label="Menü" onclick="toggleMenu()">
     <span></span><span></span><span></span>
   </button>
   <div class="brand">
@@ -164,14 +170,21 @@ footer{position:relative;background:var(--navy);color:#fff;min-height:420px;padd
     <div class="brand-name">NAVIGIUM</div>
   </div>
   <nav class="nav">
-    <a href="#">Lehrkräfte <span class="caret">▼</span></a>
-    <a href="#">Schüler:innen</a>
-    <a href="#">Preise</a>
-    <a href="#">Kontakt</a>
-    <a href="#" class="active">Wörterbuch</a>
-    <a href="#">Login</a>
+    <a href="https://www.navigium.de/navigium-fuer-latein/" target="_blank" rel="noopener">Lehrkräfte <span class="caret">▼</span></a>
+    <a href="https://www.navigium.de/latein-lernen.html" target="_blank" rel="noopener">Schüler:innen</a>
+    <a href="https://www.navigium.de/preise/" target="_blank" rel="noopener">Preise</a>
+    <a href="https://www.navigium.de/kontakt/" target="_blank" rel="noopener">Kontakt</a>
+    <a href="https://www.navigium.de/latein-woerterbuch.html" target="_blank" rel="noopener" class="active">Wörterbuch</a>
+    <a href="https://www.navigium.de/latein-woerterbuch/login" target="_blank" rel="noopener">Login</a>
   </nav>
 </header>
+<div class="quick-menu" id="quickMenu">
+  <a href="https://www.navigium.de/" target="_blank" rel="noopener">Home</a>
+  <a href="https://www.navigium.de/navigium-fuer-latein/" target="_blank" rel="noopener">Navigium für Latein</a>
+  <a href="https://www.navigium.de/latein-lernen.html" target="_blank" rel="noopener">Für Schüler:innen</a>
+  <a href="https://www.navigium.de/preise/" target="_blank" rel="noopener">Preise</a>
+  <a href="https://www.navigium.de/latein-woerterbuch.html" target="_blank" rel="noopener">Echtes Navigium-Wörterbuch</a>
+</div>
 
 <section class="search-area">
   <div class="search-inner">
@@ -243,15 +256,15 @@ footer{position:relative;background:var(--navy);color:#fff;min-height:420px;padd
       <div class="footer-contact">Tel: +49 241 513880<br>support@navigium.online</div>
     </div>
     <div class="footer-col">
-      <a href="#">Navigium für Englisch</a>
-      <a href="#">Navigium für Französisch</a>
-      <a href="#">Navigium für Latein</a>
-      <a href="#">Navigium für Spanisch</a>
-      <a href="#">Navigium für Italienisch</a>
-      <a href="#">Navigium für Altgriechisch</a>
+      <a href="https://www.navigium.de/navigium-fuer-englisch/" target="_blank" rel="noopener">Navigium für Englisch</a>
+      <a href="https://www.navigium.de/navigium-fuer-franzoesisch/" target="_blank" rel="noopener">Navigium für Französisch</a>
+      <a href="https://www.navigium.de/navigium-fuer-latein/" target="_blank" rel="noopener">Navigium für Latein</a>
+      <a href="https://www.navigium.de/navigium-fuer-spanisch/" target="_blank" rel="noopener">Navigium für Spanisch</a>
+      <a href="https://www.navigium.de/navigium-fuer-italienisch/" target="_blank" rel="noopener">Navigium für Italienisch</a>
+      <a href="https://www.navigium.de/navigium-fuer-altgriechisch/" target="_blank" rel="noopener">Navigium für Altgriechisch</a>
     </div>
     <div class="footer-col">
-      <a href="#" class="orange">Latein Wörterbuch</a>
+      <a href="https://www.navigium.de/latein-woerterbuch.html" target="_blank" rel="noopener" class="orange">Latein Wörterbuch</a>
       <a href="#">Schulungen</a>
       <a href="#">Support für Lehrkräfte</a>
       <a href="#">Schüler:innen</a>
@@ -264,7 +277,7 @@ footer{position:relative;background:var(--navy);color:#fff;min-height:420px;padd
       <a href="#">Datenschutz</a>
       <a href="#">Widerruf</a>
       <a href="#">Verträge kündigen</a>
-      <a href="#">Home</a>
+      <a href="https://www.navigium.de/" target="_blank" rel="noopener">Home</a>
     </div>
   </div>
   <div class="footer-note">Eigenständiges Spaßprojekt. Nicht mit Navigium verbunden oder von Navigium betrieben.</div>
@@ -279,30 +292,83 @@ const data=[
  {w:"rosa",title:"rosa, rosae, f.",meta:"(a-Deklination)",form:"rosa",forms:"Nom. Sg.",meaning:"Rose",de:"rose"}
 ];
 
+function toggleMenu(){
+ document.getElementById("quickMenu").classList.toggle("open");
+}
+document.addEventListener("click",e=>{
+ const menu=document.getElementById("quickMenu");
+ if(!e.target.closest(".menu") && !e.target.closest("#quickMenu")) menu.classList.remove("open");
+});
+
 function clearSearch(){
  document.getElementById("q").value="";
  document.getElementById("headingWord").textContent="Latein";
  document.querySelector(".result-heading").textContent="Bitte Suchbegriff eingeben";
  document.querySelector(".entry").innerHTML="";
 }
-function search(){
+
+function renderEntry(hit, status){
+ document.getElementById("headingWord").textContent=hit.form||hit.w;
+ document.querySelector(".result-heading").textContent="Ergebnis der Suche nach lat. Formen";
+ document.querySelector(".entry").innerHTML=
+  '<div class="entry-head">'+(hit.title||hit.w)+ ' <span class="entry-meta">'+(hit.meta||"")+'</span></div>'+
+  '<div><span class="grammar">'+(hit.form||hit.w)+'</span>'+(hit.forms?": "+hit.forms:"")+'</div>'+
+  '<div class="meaning">'+(hit.meaning||"Keine deutsche Bedeutung gefunden.")+'</div>'+
+  '<div class="api-status">'+status+'</div>';
+}
+
+async function search(){
  const q=document.getElementById("q").value.trim().toLowerCase();
  if(!q){clearSearch();return}
  document.getElementById("headingWord").textContent=q;
- document.querySelector(".result-heading").textContent="Ergebnis der Suche nach lat. Formen";
- const hit=data.find(x=>x.w===q)||
-   data.find(x=>x.w.includes(q))||
-   data.find(x=>x.de.split(" ").some(word=>word===q||word.includes(q)));
- const entry=document.querySelector(".entry");
- if(!hit){
-   entry.innerHTML='<div style="color:#555">Keine Demo-Ergebnisse gefunden.</div>';
-   return;
+ document.querySelector(".result-heading").textContent="Suche läuft …";
+ document.querySelector(".entry").innerHTML='<div class="api-status">Live-Wörterbuch wird abgefragt …</div>';
+
+ const local=data.find(x=>x.w===q)||data.find(x=>x.w.includes(q))||data.find(x=>x.de.split(" ").some(word=>word===q||word.includes(q)));
+ if(local) renderEntry(local,"Lokaler Eintrag");
+
+ // Live lookup via the public German Wiktionary API.
+ try{
+   const url="https://de.wiktionary.org/w/api.php?action=query&prop=extracts&explaintext=1&exintro=1&titles="+encodeURIComponent(q)+"&format=json&origin=*";
+   const response=await fetch(url);
+   const json=await response.json();
+   const pages=json?.query?.pages||{};
+   const page=Object.values(pages)[0];
+
+   if(page && !page.missing && page.extract){
+     const extract=page.extract.trim();
+     const latinMatch=extract.match(/(?:Latein|lateinisch|Lateinische).*?(?=\n|$)/i);
+     const text=extract.length>900?extract.slice(0,900)+"…":extract;
+     document.getElementById("headingWord").textContent=q;
+     document.querySelector(".result-heading").textContent="Live-Ergebnis";
+     document.querySelector(".entry").innerHTML=
+       '<div class="entry-head">'+escapeHtml(page.title)+'</div>'+
+       '<div class="meaning">'+escapeHtml(text).replace(/\n/g,"<br>")+'</div>'+
+       '<div class="api-status">Live-Daten: <a class="api-link" href="https://de.wiktionary.org/wiki/'+encodeURIComponent(page.title)+'" target="_blank" rel="noopener">Wiktionary</a></div>';
+     return;
+   }
+
+   if(!local){
+     document.querySelector(".result-heading").textContent="Keine passenden Einträge";
+     document.querySelector(".entry").innerHTML=
+       '<div>Für <b>'+escapeHtml(q)+'</b> wurde kein Eintrag gefunden.</div>'+
+       '<div class="api-status">Tipp: Du kannst das Wort direkt im echten Navigium-Wörterbuch öffnen.</div>'+
+       '<div style="margin-top:8px"><a class="api-link" href="https://www.navigium.de/latein-woerterbuch/'+encodeURIComponent(q)+'" target="_blank" rel="noopener">Bei Navigium nachschlagen →</a></div>';
+   }
+ }catch(error){
+   if(!local){
+     document.querySelector(".result-heading").textContent="Live-Suche nicht erreichbar";
+     document.querySelector(".entry").innerHTML=
+       '<div>Die API konnte gerade nicht erreicht werden.</div>'+
+       '<div style="margin-top:8px"><a class="api-link" href="https://www.navigium.de/latein-woerterbuch/'+encodeURIComponent(q)+'" target="_blank" rel="noopener">Bei Navigium nachschlagen →</a></div>';
+   }
  }
- entry.innerHTML=
-  '<div class="entry-head">'+hit.title+' <span class="entry-meta">'+hit.meta+'</span> ⚙</div>'+
-  '<div><span class="grammar">'+hit.form+'</span>: '+hit.forms+'</div>'+
-  '<div class="meaning">'+hit.meaning+'</div>';
 }
+
+function escapeHtml(value){
+ return String(value).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+}
+
 document.getElementById("q").addEventListener("keydown",e=>{if(e.key==="Enter")search()});
 
 function toggleTranslation(){
@@ -311,28 +377,62 @@ function toggleTranslation(){
  panel.classList.toggle("open");
  button.textContent=panel.classList.contains("open")?"− Latein → Deutsch":"＋ Latein → Deutsch";
 }
-function translateText(){
- const input=document.getElementById("translateText").value.trim().toLowerCase();
+
+async function translateText(){
+ const input=document.getElementById("translateText").value.trim();
  const result=document.getElementById("translationResult");
  if(!input){
    result.textContent="Bitte zuerst einen lateinischen Text eingeben.";
    return;
  }
- const words=input.replace(/[.,!?;:]/g,"").split(/\s+/);
- const dictionary={
-   navigium:"Schiff",navigium:"Schiff",
-   via:"Weg",viae:"Wege",
-   puella:"Mädchen",puellae:"Mädchen",
-   amicus:"Freund",amici:"Freunde",amicum:"Freund",
-   rosa:"Rose",rosam:"Rose",rosae:"Rose",
-   et:"und",in:"in",est:"ist",sunt:"sind",
-   aqua:"Wasser",aquam:"Wasser",aqua:"Wasser",
-   servus:"Sklave",servum:"Sklaven",servi:"Sklaven",
-   dominus:"Herr",dominum:"Herrn",domini:"Herren"
- };
- const translated=words.map(w=>dictionary[w]||"["+w+"]");
- result.textContent=translated.join(" ");
+ result.textContent="Übersetze …";
+
+ // MyMemory provides a public browser-accessible translation endpoint.
+ // Unknown/untranslated words are shown in square brackets instead of being silently changed.
+ try{
+   const url="https://api.mymemory.translated.net/get?q="+encodeURIComponent(input)+"&langpair=la|de";
+   const response=await fetch(url);
+   const json=await response.json();
+   let translated=json?.responseData?.translatedText||"";
+   if(!translated || translated.toLowerCase()===input.toLowerCase()){
+     translated=await translateWordByWord(input);
+   }
+   result.textContent=markUnknownWords(input,translated);
+ }catch(error){
+   result.textContent=await translateWordByWord(input);
+ }
 }
+
+async function translateWordByWord(input){
+ const tokens=input.split(/(\s+|[,.!?;:]+)/);
+ const out=[];
+ for(const token of tokens){
+   if(!token.trim() || /^[,.!?;:]+$/.test(token)){out.push(token);continue}
+   try{
+     const url="https://api.mymemory.translated.net/get?q="+encodeURIComponent(token)+"&langpair=la|de";
+     const r=await fetch(url);
+     const j=await r.json();
+     const t=j?.responseData?.translatedText?.trim();
+     out.push(t && t.toLowerCase()!==token.toLowerCase()?t:"["+token+"]");
+   }catch(e){
+     out.push("["+token+"]");
+   }
+ }
+ return out.join("");
+}
+
+function markUnknownWords(original,translated){
+ // Preserve an explicit bracket convention for obvious untranslated Latin tokens.
+ const originalWords=original.toLowerCase().match(/[a-zāēīōūȳăĕĭŏŭ]+/gi)||[];
+ let out=translated;
+ for(const word of originalWords){
+   if(out.toLowerCase().includes(word.toLowerCase()) && !out.includes("["+word+"]")){
+     out=out.replace(new RegExp("\\b"+word+"\\b","i"),"["+word+"]");
+   }
+ }
+ return out;
+}
+
 async function copyTranslation(){
  const t=document.getElementById("translationResult").textContent;
  if(t && navigator.clipboard) await navigator.clipboard.writeText(t);
