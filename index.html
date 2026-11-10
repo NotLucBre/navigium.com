@@ -103,7 +103,7 @@ main{max-width:1160px;margin:0 auto;padding:22px 28px 45px;min-height:500px}
 .training-name{font-size:18px;color:#163861;font-weight:700;margin:5px 0}
 .training-link{color:#163861;text-decoration:underline;font-weight:700}
 .all-training{display:inline-block;margin-top:10px;color:#163861;text-decoration:underline}
-.mascot{position:absolute;right:18px;bottom:0;width:150px;height:314px;pointer-events:none;z-index:2}
+.mascot{position:absolute;right:18px;bottom:20px;width:150px;height:314px;pointer-events:none;z-index:2}
 .mascot img{display:block;width:150px;height:314px;object-fit:contain}
 
 /* Translation */
@@ -242,6 +242,16 @@ footer{position:relative;background:var(--navy);color:#fff;min-height:420px;padd
         <button class="action" onclick="translateText()">Übersetzen</button>
         <button class="action" onclick="copyTranslation()">Übersetzung kopieren</button>
       </div>
+      <div style="margin-top:14px;border-top:1px solid #d9dce4;padding-top:14px">
+        <button class="action" type="button" onclick="toggleApiKey()">API-Key einrichten</button>
+        <div id="apiKeyBox" style="display:none;margin-top:10px">
+          <label for="apiKeyInput" style="display:block;font-weight:700;color:var(--blue);margin-bottom:6px">LibreTranslate API-Key</label>
+          <input id="apiKeyInput" type="password" autocomplete="off" placeholder="API-Key eingeben" style="width:100%;max-width:500px;border:1px solid #c5c8ce;border-radius:4px;padding:10px">
+          <div style="margin-top:7px;font-size:13px;color:#667085">Der Key wird nur lokal in diesem Browser gespeichert und nicht auf GitHub veröffentlicht.</div>
+          <button class="action" type="button" onclick="saveApiKey()" style="margin-top:8px">Key speichern</button>
+          <button class="action" type="button" onclick="removeApiKey()" style="margin-top:8px">Key löschen</button>
+        </div>
+      </div>
     </div>
   </section>
 </main>
@@ -372,6 +382,27 @@ function escapeHtml(value){
 
 document.getElementById("q").addEventListener("keydown",e=>{if(e.key==="Enter")search()});
 
+function toggleApiKey(){
+ const box=document.getElementById("apiKeyBox");
+ const input=document.getElementById("apiKeyInput");
+ box.style.display=box.style.display==="none"?"block":"none";
+ const saved=localStorage.getItem("navigiumLibreTranslateKey");
+ if(saved && !input.value) input.value=saved;
+}
+
+function saveApiKey(){
+ const key=document.getElementById("apiKeyInput").value.trim();
+ if(!key){alert("Bitte einen API-Key eingeben.");return}
+ localStorage.setItem("navigiumLibreTranslateKey",key);
+ alert("API-Key wurde lokal gespeichert.");
+}
+
+function removeApiKey(){
+ localStorage.removeItem("navigiumLibreTranslateKey");
+ document.getElementById("apiKeyInput").value="";
+ alert("API-Key wurde aus diesem Browser gelöscht.");
+}
+
 function toggleTranslation(){
  const panel=document.getElementById("translatePanel");
  const button=document.getElementById("translateToggle");
@@ -432,7 +463,8 @@ async function translateText(){
          q:input,
          source:"la",
          target:"de",
-         format:"text"
+         format:"text",
+         ...(apiKey ? {api_key:apiKey} : {})
        })
      });
      if(response.ok){
@@ -453,6 +485,7 @@ async function translateText(){
  }else{
    result.textContent+="\n\nNicht erkannt: "+unknown.join(", ");
    result.textContent+="\nDie öffentliche Übersetzungs-API war nicht verfügbar.";
+   if(!apiKey) result.textContent+="\nTipp: Unter „API-Key einrichten“ kannst du deinen eigenen LibreTranslate-Key hinterlegen.";
  }
 }
 
