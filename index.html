@@ -1,0 +1,78 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Latein-Wörterbuch</title>
+<style>
+:root{--green:#78b82a;--dark:#4e8518;--bg:#f4f6f1;--border:#d7ddd0;--text:#333}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);font-family:Arial,Helvetica,sans-serif;color:var(--text)}
+header{background:linear-gradient(#82c332,#6faa20);color:#fff;border-bottom:4px solid #568b16}
+.header{max-width:1050px;margin:auto;padding:18px 22px;display:flex;align-items:center;gap:18px}
+.logo{font-size:30px;font-weight:700}.sub{font-size:14px;opacity:.9}
+main{max-width:1050px;margin:28px auto;padding:0 18px}
+.card{background:white;border:1px solid var(--border);border-radius:6px;box-shadow:0 2px 8px #0000000d;margin-bottom:22px}
+.search{padding:20px}.searchrow{display:flex;gap:8px}.searchrow input{flex:1;padding:12px;border:1px solid #bbb;border-radius:4px;font-size:16px}.btn{border:0;border-radius:4px;padding:11px 18px;background:var(--green);color:#fff;font-weight:700;cursor:pointer}.btn:hover{background:var(--dark)}
+.options{margin-top:14px;display:flex;gap:20px;flex-wrap:wrap;font-size:14px}
+.results{padding:22px}.result{padding:15px 0;border-bottom:1px solid #e4e8df}.result:last-child{border-bottom:0}.latin{font-size:21px;font-weight:700;color:#4f7e1c}.meta{font-size:13px;color:#777}.meaning{margin-top:7px;line-height:1.55}.meaning b{color:#222}
+h2{margin:0 0 15px;color:#527e20;font-size:21px}
+.translate textarea{width:100%;min-height:130px;resize:vertical;padding:12px;border:1px solid #bbb;border-radius:4px;font:16px Arial}
+.translate .actions{display:flex;gap:8px;margin-top:10px;flex-wrap:wrap}
+footer{text-align:center;color:#777;font-size:12px;padding:30px}
+.hidden{display:none}
+@media(max-width:650px){.searchrow{flex-direction:column}.header{align-items:flex-start;flex-direction:column}.logo{font-size:25px}}
+</style>
+</head>
+<body>
+<header><div class="header"><div class="logo">Navigium</div><div class="sub">Latein-Wörterbuch · Spaßprojekt</div></div></header>
+<main>
+<section class="card search">
+  <div class="searchrow"><input id="q" placeholder="lateinische Form oder deutsche Grundform" autocomplete="off"><button class="btn" onclick="search()">Suchen</button></div>
+  <div class="options">
+    <label><input type="radio" name="dict" value="large"> Großwörterbuch</label>
+    <label><input type="radio" name="dict" value="school" checked> Schulwörterbuch</label>
+  </div>
+</section>
+<section class="card results">
+  <h2 id="title">Beispielergebnisse</h2>
+  <div id="results">
+    <div class="result"><div class="latin">via, viae, f.</div><div class="meta">a-Deklination</div><div class="meaning"><b>1.</b> Weg, Straße<br><b>2.</b> Reise, Wegstrecke</div></div>
+    <div class="result"><div class="latin">puella, puellae, f.</div><div class="meta">a-Deklination</div><div class="meaning"><b>1.</b> Mädchen</div></div>
+    <div class="result"><div class="latin">amicus, amīcī, m.</div><div class="meta">o-Deklination</div><div class="meaning"><b>1.</b> Freund<br><b>2.</b> befreundet, freundlich</div></div>
+  </div>
+</section>
+<section class="card translate search">
+  <h2>Latein → Deutsch</h2>
+  <textarea id="text" placeholder="Lateinischen Text hier eingeben ..."></textarea>
+  <div class="actions"><button class="btn" onclick="translate()">Mit Google Translate übersetzen</button><button class="btn" onclick="copyText()">Text kopieren</button></div>
+</section>
+</main>
+<footer>Eigenständiges Spaßprojekt. Nicht mit Navigium verbunden oder von Navigium betrieben.</footer>
+<script>
+const data=[
+ {w:"via",html:"<b>via</b>, viae, f.<br><span class='meta'>a-Deklination</span><br><b>1.</b> Weg, Straße<br><b>2.</b> Reise, Wegstrecke"},
+ {w:"puella",html:"<b>puella</b>, puellae, f.<br><span class='meta'>a-Deklination</span><br><b>1.</b> Mädchen"},
+ {w:"amicus",html:"<b>amicus</b>, amīcī, m.<br><span class='meta'>o-Deklination</span><br><b>1.</b> Freund<br><b>2.</b> befreundet, freundlich"},
+ {w:"rosa",html:"<b>rosa</b>, rosae, f.<br><span class='meta'>a-Deklination</span><br><b>1.</b> Rose"},
+ {w:"navigium",html:"<b>navigium</b>, navigiī, n.<br><span class='meta'>o-Deklination</span><br><b>1.</b> Schiff"}
+];
+function search(){
+ const q=document.getElementById("q").value.trim().toLowerCase();
+ const box=document.getElementById("results");
+ document.getElementById("title").textContent=q?("Suchergebnis für „"+q+"“"):"Beispielergebnisse";
+ if(!q){location.hash="";location.reload();return}
+ const hits=data.filter(x=>x.w.includes(q));
+ box.innerHTML=hits.length?hits.map(x=>"<div class='result'><div class='latin'>"+x.html+"</div></div>").join(""):"<div class='result'>Keine lokalen Demo-Ergebnisse gefunden.<br><br>Für echte Wörterbuchdaten müsste ein eigenes Datenbackend eingebunden werden.</div>";
+}
+document.getElementById("q").addEventListener("keydown",e=>{if(e.key==="Enter")search()});
+function translate(){
+ const t=document.getElementById("text").value.trim();
+ if(!t)return;
+ location.href="https://translate.google.com/?sl=la&tl=de&text="+encodeURIComponent(t)+"&op=translate";
+}
+async function copyText(){
+ const t=document.getElementById("text").value;
+ if(t) await navigator.clipboard.writeText(t);
+}
+</script>
+</body></html>
