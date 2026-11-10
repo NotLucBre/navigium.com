@@ -1,0 +1,16 @@
+{
+  "name":"Navigium – Latein-Wörterbuch",
+  "short_name":"Navigium",
+  "start_url":".",
+  "display":"standalone",
+  "background_color":"#ffffff",
+  "theme_color":"#3d478f",
+  "icons":[
+    {
+      "src":"assets/navigium-icon.svg",
+      "sizes":"128x128",
+      "type":"image/svg+xml",
+      "purpose":"any maskable"
+    }
+  ]
+}
