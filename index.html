@@ -130,7 +130,7 @@ main{max-width:1160px;margin:0 auto;padding:22px 28px 45px;min-height:500px}
   font-weight:700;cursor:pointer
 }
 .action:hover{background:#303a7b}
-.translation-result{background:#f7f8fb;min-height:115px;border:1px solid #c5c8ce;border-radius:4px;padding:10px;white-space:pre-wrap}
+.translation-result{background:#f7f8fb;min-height:115px;border:1px solid #c5c8ce;border-radius:4px;padding:10px;white-space:pre-wrap;overflow-wrap:anywhere}
 
 /* Footer */
 footer{position:relative;background:var(--navy);color:#fff;min-height:420px;padding:70px 42px 45px}
@@ -345,7 +345,7 @@ async function search(){
      if(meaning){
        renderEntry(
          {w:q,title:q,meta:"",form:q,forms:"",meaning:meaning},
-         "Lokaler Eintrag aus der Latein-Datenbank"
+         ""
        );
      }else{
        document.querySelector(".result-heading").textContent="Kein Eintrag in der Datenbank";
@@ -415,28 +415,40 @@ async function translateText(){
  // The secret/full-text translator uses ONLY the API. The local vocabulary
  // database is intentionally not used here.
  try{
-   const parts=[];
-   for(let i=0;i<input.length;i+=450){
-     parts.push(input.slice(i,i+450));
+   // Zeilen einzeln übersetzen, damit Absätze und Zeilenumbrüche erhalten bleiben.
+   const lines=input.split(/\\r?\\n/);
+   const translatedLines=[];
+
+   for(const line of lines){
+     if(!line.trim()){
+       translatedLines.push("");
+       continue;
+     }
+
+     const chunks=[];
+     for(let i=0;i<line.length;i+=450){
+       chunks.push(line.slice(i,i+450));
+     }
+
+     const translatedChunks=[];
+     for(const chunk of chunks){
+       const params=new URLSearchParams({
+         q:chunk,
+         langpair:"la|de",
+         mt:"1"
+       });
+       const response=await fetch("https://api.mymemory.translated.net/get?"+params.toString());
+       if(!response.ok) throw new Error("API HTTP "+response.status);
+       const json=await response.json();
+       const text=json?.responseData?.translatedText;
+       if(!text) throw new Error("Keine Übersetzung erhalten");
+       translatedChunks.push(text);
+     }
+     translatedLines.push(translatedChunks.join(""));
    }
 
-   const translated=[];
-   for(const part of parts){
-     const params=new URLSearchParams({
-       q:part,
-       langpair:"la|de",
-       mt:"1"
-     });
-     const response=await fetch("https://api.mymemory.translated.net/get?"+params.toString());
-     if(!response.ok) throw new Error("API HTTP "+response.status);
-     const json=await response.json();
-     const text=json?.responseData?.translatedText;
-     if(!text) throw new Error("Keine Übersetzung erhalten");
-     translated.push(text);
-   }
-
-   result.textContent=translated.join("");
-   result.textContent+="\\n\\n✓ Übersetzt mit MyMemory.";
+   result.textContent=translatedLines.join("\n");
+   result.textContent+="\n\n✓ Übersetzt mit MyMemory.";
  }catch(error){
    result.textContent="Die Übersetzungs-API ist gerade nicht verfügbar. Bitte versuche es später erneut.";
  }
