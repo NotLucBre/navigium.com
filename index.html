@@ -677,7 +677,13 @@ async function translateText(){
    if(provider==="lara"){const translated=await translateWithLara(input);result.textContent=translated+"\n\n✓ Übersetzt mit Lara.";status.textContent="Lara wurde verwendet.";return;}
    if(provider==="openai"){const translated=await translateWithOpenAI(input);result.textContent=translated+"\n\n✓ Übersetzt mit OpenAI.";status.textContent="OpenAI wurde verwendet.";return;}
    if(provider==="gemini"){const translated=await translateWithGemini(input);result.textContent=translated+"\n\n✓ Übersetzt mit Gemini.";status.textContent="Gemini wurde verwendet.";return;}
- }catch(error){status.textContent="Gewählter Dienst konnte nicht verwendet werden. Fallback auf MyMemory …";}
+ }catch(error){
+   if(provider==="gemini" && (error.message.includes("GEMINI_HTTP_429") || error.message.includes("RESOURCE_EXHAUSTED"))){
+     status.textContent="Gemini lehnt die Anfrage gerade wegen hoher Auslastung bzw. anderer Nutzer ab. Deshalb wird automatisch MyMemory verwendet.";
+   }else{
+     status.textContent="Gewählter Dienst konnte nicht verwendet werden. Fallback auf MyMemory …";
+   }
+ }
  try{const translated=await translateWithMyMemory(input);result.textContent=translated+"\n\n✓ Übersetzt mit MyMemory.";status.textContent="MyMemory wurde als Fallback verwendet.";}
  catch(error){result.textContent="Die Übersetzungsdienste sind gerade nicht verfügbar. Bitte versuche es später erneut.";}
 }
