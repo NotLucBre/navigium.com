@@ -9,7 +9,7 @@ permissions:
 
 jobs:
   rebuild-zip:
-    if: !contains(github.event.head_commit.message, '[skip ci]')
+    if: ${{ !contains(github.event.head_commit.message, '[skip ci]') }}
     runs-on: windows-latest
 
     steps:
@@ -103,5 +103,9 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add thonny-5.0.1.zip
+          if (git diff --cached --quiet) {
+            Write-Host "ZIP is already up to date."
+            exit 0
+          }
           git commit -m "Fix Thonny build bootstrap [skip ci]"
           git push
