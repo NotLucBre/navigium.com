@@ -1,1 +1,2 @@
-GitHub connection test
+connection-ok
+thonny-build-fix-trigger
